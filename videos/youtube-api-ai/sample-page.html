@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Channel Agent · Sample Page</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<!--
+  SAMPLE PAGE. All numbers, titles, search terms and comments are MADE UP; they do not belong to a real channel.
+  The page is a single file and does not connect to anything. When you have your own page built, you can give this
+  file to your AI and say "build the same layout with my channel's data". Which API each piece of data comes from
+  is written next to each field in the SAMPLE_DATA object below.
+-->
+<style>
+:root{
+  --bg:#0a0711; --panel:#100b18; --panel2:#150f1f; --line:#241a33;
+  --text:#f3eef8; --text2:#9b91a8; --text3:#6b6278;
+  --pink:#d4537e; --green:#3dd9a3; --amber:#f2b134; --blue:#6aa8ff; --purple:#b07cff; --coral:#ff7a8a;
+  --head:"Space Grotesk",system-ui,sans-serif; --sans:"Hanken Grotesk",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 var(--sans)}
+a{color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding:20px 16px 60px;display:flex;flex-direction:column;gap:18px}
+.notice{background:#2a1a08;border:1px solid #5a3a10;color:#f6d39a;border-radius:10px;padding:10px 14px;font-size:13.5px}
+.notice b{color:var(--amber)}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:14px 20px}
+.avatar{width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--purple));display:grid;place-items:center;font:700 22px var(--head)}
+h1{font:600 24px var(--head);margin:0}
+.sub{color:var(--text2);font-size:13.5px;display:flex;gap:14px;flex-wrap:wrap}
+.sub b{color:var(--text)}
+.right{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap}
+.picker{display:flex;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:3px}
+.picker button{background:none;border:0;color:var(--text2);font:500 13px var(--sans);padding:6px 11px;border-radius:7px;cursor:pointer}
+.picker button.on{background:var(--pink);color:#fff}
+.picker button:focus-visible{outline:2px solid var(--blue)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px}
+.card h2{font:600 18px var(--head);margin:0 0 4px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.dot{width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ff9ec0,var(--pink));flex:none}
+.tag{font:500 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--text3)}
+.desc{color:var(--text2);font-size:13.5px;margin:0 0 12px}
+.two{display:grid;grid-template-columns:1.5fr 1fr;gap:18px}
+@media (max-width:860px){.two{grid-template-columns:1fr}}
+/* new video */
+.showcase{display:grid;grid-template-columns:240px 1fr;gap:18px}
+@media (max-width:620px){.showcase{grid-template-columns:1fr}}
+.thumb{aspect-ratio:16/9;border-radius:12px;background:linear-gradient(135deg,#3a1d5c,#d4537e 60%,#f2b134);display:grid;place-items:center;font:700 20px var(--head);text-align:center;padding:12px;text-shadow:0 2px 10px #0008}
+.badge{display:inline-block;font:600 11px var(--mono);padding:3px 8px;border-radius:99px;background:#0f2e24;color:var(--green);border:1px solid #1d5a46}
+.badge.private{background:#2b2108;color:var(--amber);border-color:#5a4410}
+.chapter{display:flex;gap:10px;font-size:14px;padding:3px 0}
+.chapter span:first-child{font-family:var(--mono);color:var(--text3);min-width:42px}
+.steps{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.steps span{font-size:12.5px;padding:3px 9px;border-radius:99px;background:var(--panel2);border:1px solid var(--line);color:var(--text2)}
+.steps span.ok{color:var(--green);border-color:#1d5a46}
+.buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.btn{font:600 13px var(--sans);padding:8px 14px;border-radius:9px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.btn.main{background:var(--pink);border-color:var(--pink);color:#fff}
+.btn:focus-visible{outline:2px solid var(--blue)}
+/* metrics */
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.metric{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.metric .name{font-size:12.5px;color:var(--text2)}
+.metric .value{font:500 28px var(--mono);font-variant-numeric:tabular-nums;margin:2px 0}
+.metric .cmp{font:400 12px var(--mono);color:var(--text3)}
+.metric .cmp .up{color:var(--green)} .metric .cmp .down{color:var(--coral)}
+.strip{height:4px;border-radius:2px;background:var(--line);margin-top:8px;position:relative}
+.strip i{position:absolute;inset:0 auto 0 0;border-radius:2px;background:var(--green)}
+.strip b{position:absolute;top:-4px;width:2px;height:12px;background:var(--text2)}
+/* suggestions */
+.suggestions{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+.suggestion{background:var(--panel2);border:1px solid var(--line);border-left:3px solid var(--blue);border-radius:12px;padding:14px}
+.suggestion.audience{border-left-color:var(--amber)} .suggestion.technical{border-left-color:var(--purple)}
+.suggestion h3{font:600 15px var(--sans);margin:4px 0 6px}
+.suggestion p{margin:0 0 8px;color:var(--text2);font-size:13.5px}
+.todo{background:#0c0814;border-radius:8px;padding:8px 10px;font-size:13px}
+.todo .tag{display:block;color:var(--green);margin-bottom:2px}
+/* charts */
+svg{display:block;width:100%;height:auto}
+.axis{stroke:var(--line)} .axis-text{fill:var(--text3);font:11px var(--mono)}
+.list{display:flex;flex-direction:column;gap:7px}
+.row{display:grid;grid-template-columns:1fr auto;gap:4px 10px;font-size:13.5px}
+.row .bar{grid-column:1/-1;height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.row .bar i{display:block;height:100%;border-radius:3px}
+.row .num{font-family:var(--mono);color:var(--text2);font-variant-numeric:tabular-nums}
+.terms{display:flex;flex-wrap:wrap;gap:8px}
+.term{background:var(--panel2);border:1px solid var(--line);border-radius:99px;padding:5px 11px;font-size:13px}
+.term.missing{border-color:#5a3a10;color:var(--amber)}
+.term small{font-family:var(--mono);color:var(--text3);margin-left:6px}
+/* comments */
+.comment{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.comment .who{font-size:12.5px;color:var(--text2)}
+.draft{border-left:2px solid var(--pink);padding:6px 10px;background:#140c1c;border-radius:0 8px 8px 0;font-size:13.5px}
+.draft .tag{display:block;color:var(--pink)}
+.rule{display:flex;gap:10px;align-items:center;background:#0f2e24;border:1px solid #1d5a46;border-radius:12px;padding:12px 14px;font-size:14px}
+.rule b{color:var(--green)}
+footer{color:var(--text3);font-size:12.5px;text-align:center}
+@media (prefers-reduced-motion:no-preference){.card{animation:in .4s ease both}@keyframes in{from{opacity:0;transform:translateY(6px)}}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="notice"><b>Sample page.</b> All numbers, titles, search terms and comments are made up; they do not belong to a real channel. When you have your own page built, you can give this file to your AI and say "build the same layout with my channel's data".</div>
+
+  <header>
+    <div class="avatar" aria-hidden="true">S</div>
+    <div>
+      <h1 id="channel-name"></h1>
+      <div class="sub" id="channel-sub"></div>
+    </div>
+    <div class="right">
+      <div class="picker" role="group" aria-label="Period">
+        <button type="button">7 days</button><button type="button" class="on">28 days</button><button type="button">90 days</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="card" aria-labelledby="h-new">
+    <h2 id="h-new"><span class="dot"></span>New video <span class="tag">private uploads are checked every 10 minutes</span></h2>
+    <div class="showcase">
+      <div class="thumb" id="new-thumb"></div>
+      <div>
+        <span class="badge private">PRIVATE · waiting for approval</span>
+        <h3 style="font:600 20px var(--head);margin:8px 0 4px" id="new-title"></h3>
+        <div class="steps" id="new-steps"></div>
+        <div id="new-chapters"></div>
+        <div class="buttons">
+          <button class="btn main" type="button" title="Sample: does nothing on this page">Preview and approve</button>
+          <button class="btn" type="button" title="Sample: does nothing on this page">Edit description</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="rule"><b>Rule:</b> Without approval, nothing gets written to YouTube and nothing gets published. Videos are always uploaded as private.</div>
+
+  <section class="card" aria-labelledby="h-report">
+    <h2 id="h-report"><span class="dot"></span>Latest video report card <span class="tag">compared with: median of the last 12 long videos</span></h2>
+    <p class="desc">Under each metric is the channel's own median; the vertical line marks the median.</p>
+    <div class="metrics" id="report"></div>
+  </section>
+
+  <section class="card" aria-labelledby="h-sugg">
+    <h2 id="h-sugg"><span class="dot"></span>The agent's suggestions <span class="tag">data + rules → suggestion</span></h2>
+    <p class="desc">Each suggestion has an observation and one thing to do. It does not change anything on the channel; applying it is up to you.</p>
+    <div class="suggestions" id="suggestions"></div>
+  </section>
+
+  <div class="two">
+    <section class="card" aria-labelledby="h-daily">
+      <h2 id="h-daily"><span class="dot"></span>Last 28 days</h2>
+      <div class="metrics" id="summary" style="margin:8px 0 14px"></div>
+      <div id="daily"></div>
+    </section>
+    <section class="card" aria-labelledby="h-country">
+      <h2 id="h-country"><span class="dot"></span>Countries</h2>
+      <p class="desc">Share of views, last 28 days.</p>
+      <div class="list" id="countries"></div>
+    </section>
+  </div>
+
+  <section class="card" aria-labelledby="h-retention">
+    <h2 id="h-retention"><span class="dot"></span>The moment viewers leave <span class="tag">latest video · retention curve</span></h2>
+    <p class="desc" id="retention-note"></p>
+    <div id="retention"></div>
+  </section>
+
+  <div class="two">
+    <section class="card" aria-labelledby="h-search">
+      <h2 id="h-search"><span class="dot"></span>Search terms on YouTube</h2>
+      <p class="desc">The yellow ones are being searched for but do not appear in any title or description.</p>
+      <div class="terms" id="terms"></div>
+    </section>
+    <section class="card" aria-labelledby="h-traffic">
+      <h2 id="h-traffic"><span class="dot"></span>How people find you</h2>
+      <p class="desc">Traffic sources, last 28 days.</p>
+      <div class="list" id="traffic"></div>
+    </section>
+  </div>
+
+  <section class="card" aria-labelledby="h-comments">
+    <h2 id="h-comments"><span class="dot"></span>Unanswered comments <span class="tag">replies are drafts, you are the one who sends them</span></h2>
+    <div class="list" id="comments" style="gap:10px;margin-top:10px"></div>
+  </section>
+
+  <footer>Sample page · all data is made up · designed to be fed by Google's official YouTube Data, Analytics and Reporting APIs</footer>
+</div>
+
+<script>
+// On a real page, this object is filled from the APIs. The source of each field is written next to it. Everything here is MADE UP.
+const SAMPLE_DATA = {
+  channel: { name: "Sample Channel", handle: "@samplechannel", subscribers: 1240, totalViews: 86400, videos: 31 },   // Data API: channels (mine=true)
+  newVideo: {                                                                                                         // Data API: videos (latest private upload)
+    title: "I Built a Home Plant Watering System From $20 Parts",
+    steps: [["Uploaded", 1], ["Transcribed", 1], ["Title and description draft", 1], ["Chapters", 1], ["Subtitles (EN, ES)", 1], ["Approval", 0]],
+    chapters: [["0:00", "Why I built this system"], ["0:48", "The parts you need"], ["2:15", "Connecting the hose and valve"], ["4:02", "Setting the timer"], ["5:30", "The result after one week"]]
+  },
+  report: [                                                                                                           // Analytics API (per video) + channel median
+    { name: "Views, first 2 days", value: "1,930", cmp: "channel 1,410", diff: "+37%", good: true, ratio: .72, median: .52 },
+    { name: "Click-through rate", value: "5.1%", cmp: "channel 4.6%", diff: "+0.5 pts", good: true, ratio: .51, median: .46 },   // Reporting API
+    { name: "Still watching at 0:30", value: "68.2%", cmp: "channel 61.0%", diff: "+7.2 pts", good: true, ratio: .68, median: .61 },
+    { name: "Avg. percentage viewed", value: "38.5%", cmp: "channel 41.2%", diff: "-2.7 pts", good: false, ratio: .385, median: .412 },
+    { name: "Subscribers per 1,000 views", value: "7.4", cmp: "channel 6.1", diff: "+21%", good: true, ratio: .62, median: .51 }
+  ],
+  suggestions: [                                                                                                      // AI: reads the data with rules
+    { type: "Discovery", cls: "", title: "People search for \"how to set up automatic watering\", but no video uses that phrase",
+      observation: "This search brought 64 views in the last 28 days; the phrase is not in any title, description or tag.", todo: "Add this phrase to the first two lines of the watering video's description and to its tags." },
+    { type: "Audience", cls: "audience", title: "Subscribers make up only 9% of views",
+      observation: "The channel grows mostly through new viewers; subscribers rarely see new videos.", todo: "Add a short subscribe and notification reminder in the middle of the video; announce new videos in the Community tab first." },
+    { type: "Technical", cls: "technical", title: "3 of the last 5 long videos have no chapters",
+      observation: "Chapters feed the 'key moments' box in Google Search.", todo: "Add a timestamped chapter list to the descriptions of these three videos." }
+  ],
+  summary: [ { name: "Views", value: "9,870" }, { name: "Watch time", value: "612 hrs" }, { name: "Net subscribers", value: "+58" } ],   // Analytics API: channel
+  daily: [212,248,190,305,410,388,296,271,260,318,342,295,280,301,355,620,1180,840,560,430,388,350,322,298,341,366,310,292],          // Analytics API: day dimension
+  countries: [ ["United States", 41.6], ["United Kingdom", 12.3], ["Canada", 8.9], ["Germany", 7.4], ["Australia", 5.2], ["Other", 24.6] ], // Analytics API: country dimension
+  retention: { length: 372, curve: [1,.93,.86,.8,.76,.73,.71,.69,.68,.66,.65,.64,.62,.61,.6,.59,.58,.57,.56,.55,.47,.45,.44,.43,.42,.41,.4,.4,.39,.38,.37,.36,.35,.34,.33,.31,.3,.29,.28,.26,.24] }, // Analytics API: elapsedVideoTimeRatio (1% slices; simplified here)
+  terms: [ ["how to set up automatic watering", 64, 1], ["drip irrigation", 41, 0], ["balcony garden", 33, 0], ["smart plug setup", 29, 1], ["growing seedlings indoors", 18, 0], ["watering timer settings", 12, 0] ], // Analytics API: insightTrafficSourceDetail
+  traffic: [ ["YouTube search", 38, "var(--blue)"], ["Suggested videos", 27, "var(--purple)"], ["Browse features (home page)", 21, "var(--pink)"], ["External sites", 8, "var(--amber)"], ["Other", 6, "var(--text3)"] ], // Analytics API: insightTrafficSourceType
+  comments: [                                                                                                         // Data API: commentThreads (unanswered ones)
+    { who: "@viewer_a · 2 hours ago", text: "Does the valve run on 12 volts? Which adapter did you get?", draft: "Yes, I used a 12 V solenoid valve; a 2 A adapter was enough. The parts list is in the description." },
+    { who: "@viewer_b · yesterday", text: "Will the pipes freeze in winter?", draft: "It was fine because my balcony is enclosed, but outdoors I'd recommend draining the hose in winter." }
+  ]
+};
+
+const $ = id => document.getElementById(id);
+const num = n => n.toLocaleString("en-US");
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const D = SAMPLE_DATA;
+
+$("channel-name").textContent = D.channel.name;
+$("channel-sub").innerHTML = `<span>${esc(D.channel.handle)}</span><span><b>${num(D.channel.subscribers)}</b> subscribers</span><span><b>${num(D.channel.totalViews)}</b> total views</span><span><b>${D.channel.videos}</b> videos</span>`;
+
+$("new-thumb").textContent = "Sample thumbnail";
+$("new-title").textContent = D.newVideo.title;
+$("new-steps").innerHTML = D.newVideo.steps.map(([s, ok]) => `<span class="${ok ? "ok" : ""}">${ok ? "✓ " : "… "}${esc(s)}</span>`).join("");
+$("new-chapters").innerHTML = D.newVideo.chapters.map(([t, s]) => `<div class="chapter"><span>${t}</span><span>${esc(s)}</span></div>`).join("");
+
+$("report").innerHTML = D.report.map(k => `<div class="metric"><div class="name">${esc(k.name)}</div><div class="value">${esc(k.value)}</div>
+  <div class="cmp">${esc(k.cmp)} · <span class="${k.good ? "up" : "down"}">${esc(k.diff)}</span></div>
+  <div class="strip" aria-hidden="true"><i style="width:${k.ratio * 100}%;background:${k.good ? "var(--green)" : "var(--amber)"}"></i><b style="left:${k.median * 100}%"></b></div></div>`).join("");
+
+$("suggestions").innerHTML = D.suggestions.map(o => `<article class="suggestion ${o.cls}"><span class="tag">${esc(o.type)}</span><h3>${esc(o.title)}</h3>
+  <p>${esc(o.observation)}</p><div class="todo"><span class="tag">What to do</span>${esc(o.todo)}</div></article>`).join("");
+
+$("summary").innerHTML = D.summary.map(k => `<div class="metric"><div class="name">${esc(k.name)}</div><div class="value" style="font-size:22px">${esc(k.value)}</div></div>`).join("");
+
+// Daily views: area chart
+(function () {
+  const d = D.daily, W = 640, H = 180, p = 28, top = Math.max(...d) * 1.1;
+  const x = i => p + i * (W - p - 8) / (d.length - 1), y = v => H - 22 - v / top * (H - 40);
+  const line = d.map((v, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join("");
+  const peak = d.indexOf(Math.max(...d));
+  const grid = [0, .5, 1].map(f => `<line class="axis" x1="${p}" x2="${W - 8}" y1="${y(top / 1.1 * f)}" y2="${y(top / 1.1 * f)}"/><text class="axis-text" x="0" y="${y(top / 1.1 * f) + 4}">${Math.round(top / 1.1 * f)}</text>`).join("");
+  $("daily").innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Daily views over the last 28 days">
+    <defs><linearGradient id="ga" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#d4537e" stop-opacity=".45"/><stop offset="1" stop-color="#d4537e" stop-opacity="0"/></linearGradient></defs>
+    ${grid}<path d="${line}L${x(d.length - 1)},${H - 22}L${x(0)},${H - 22}Z" fill="url(#ga)"/>
+    <path d="${line}" fill="none" stroke="#d4537e" stroke-width="2"/>
+    <circle cx="${x(peak)}" cy="${y(d[peak])}" r="4.5" fill="#f3eef8" stroke="#d4537e" stroke-width="2"/>
+    <text class="axis-text" x="${x(peak) + 8}" y="${y(d[peak]) + 4}" style="fill:#f3eef8">${num(d[peak])} · new video</text>
+    <text class="axis-text" x="${p}" y="${H - 4}">28 days ago</text><text class="axis-text" x="${W - 8}" y="${H - 4}" text-anchor="end">yesterday</text></svg>`;
+})();
+
+$("countries").innerHTML = D.countries.map(([c, p]) => `<div class="row"><span>${esc(c)}</span><span class="num">${p.toLocaleString("en-US")}%</span><span class="bar"><i style="width:${p}%;background:var(--green)"></i></span></div>`).join("");
+
+// Retention curve: the sharpest drop is marked
+(function () {
+  const e = D.retention.curve, len = D.retention.length, W = 900, H = 200, p = 34;
+  const x = i => p + i * (W - p - 10) / (e.length - 1), y = v => 14 + (1 - v) * (H - 40);
+  let drop = 0, di = 1;
+  for (let i = 2; i < e.length; i++) { const f = e[i - 1] - e[i]; if (f > drop && (i - 1) / (e.length - 1) * len >= 30) { drop = f; di = i; } }
+  const sec = Math.round((di - 1) / (e.length - 1) * len), mmss = `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}`;
+  $("retention-note").textContent = `The sharpest drop is at ${mmss}: ${Math.round(drop * 100)}% of viewers left here. The agent reads this moment from the transcript and tells you what was being said at that second.`;
+  const line = e.map((v, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join("");
+  const grid = [1, .5, 0].map(v => `<line class="axis" x1="${p}" x2="${W - 10}" y1="${y(v)}" y2="${y(v)}"/><text class="axis-text" x="0" y="${y(v) + 4}">${v * 100}%</text>`).join("");
+  $("retention").innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Retention curve, sharpest drop at ${mmss}">
+    ${grid}<rect x="${x(di - 1)}" y="10" width="${x(di) - x(di - 1)}" height="${H - 34}" fill="#ff7a8a" opacity=".14"/>
+    <path d="${line}" fill="none" stroke="#6aa8ff" stroke-width="2"/>
+    <circle cx="${x(di)}" cy="${y(e[di])}" r="5" fill="#ff7a8a" stroke="#0a0711" stroke-width="2"/>
+    <text class="axis-text" x="${x(di) + 10}" y="${y(e[di]) - 8}" style="fill:#ff7a8a">${mmss} · -${Math.round(drop * 100)}%</text>
+    <text class="axis-text" x="${p}" y="${H - 6}">0:00</text><text class="axis-text" x="${W - 10}" y="${H - 6}" text-anchor="end">${Math.floor(len / 60)}:${String(len % 60).padStart(2, "0")}</text></svg>`;
+})();
+
+$("terms").innerHTML = D.terms.map(([t, n, missing]) => `<span class="term ${missing ? "missing" : ""}">${esc(t)}<small>${n}</small></span>`).join("");
+$("traffic").innerHTML = D.traffic.map(([s, p, c]) => `<div class="row"><span>${esc(s)}</span><span class="num">${p}%</span><span class="bar"><i style="width:${p}%;background:${c}"></i></span></div>`).join("");
+$("comments").innerHTML = D.comments.map(c => `<div class="comment"><div class="who">${esc(c.who)}</div><div>${esc(c.text)}</div>
+  <div class="draft"><span class="tag">Draft reply</span>${esc(c.draft)}</div>
+  <div class="buttons" style="margin:0"><button class="btn main" type="button" title="Sample: does nothing on this page">Approve and send</button><button class="btn" type="button" title="Sample: does nothing on this page">Edit</button></div></div>`).join("");
+
+document.querySelectorAll(".picker button").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll(".picker button").forEach(x => x.classList.toggle("on", x === b));
+}));
+</script>
+</body>
+</html>
